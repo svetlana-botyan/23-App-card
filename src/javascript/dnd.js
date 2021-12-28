@@ -13,7 +13,7 @@ class Dnd {
     this.handleMouseup = this.handleMouseup.bind(this);
 
     this.containerElement.addEventListener("mousedown", this.handleMousedown);
-}
+  }
 
   handleMousedown(event) {
     const { id } = event.target;
@@ -21,53 +21,53 @@ class Dnd {
 
     this.elements.forEach((element) => {
       if (element.id === id) {
-        document.addEventListener("mousemove", this.handleMousemove);
-        document.addEventListener("mouseup", this.handleMouseup);
-        
-        this.calcShifts(clientX, clientY, element);
-        this.setPosition(clientX, clientY);
+        const shifts = {
+          x: 0,
+          y: 0,
+        };
+
+        const position = {
+          top: "auto",
+          left: "auto",
+        };
+
+        document.addEventListener("mousemove", this.handleMousemove(event, element, position, shifts));
+        document.addEventListener("mouseup", this.handleMouseup(event, element, position, shifts));
+
+        this.calcShifts(clientX, clientY, element, shifts);
+        this.setPosition(clientX, clientY, element, position, shifts);
       }
     });
   }
 
-  handleMousemove({ clientX, clientY }) {
+  handleMousemove({ clientX, clientY },element, position, shifts) {
     console.log({ clientX, clientY });
 
-    this.setPosition(clientX, clientY);
+    this.setPosition(clientX, clientY,element, position, shifts);
   }
 
-  handleMouseup({ clientX, clientY }) {
+  handleMouseup({ clientX, clientY },element, position, shifts) {
     document.removeEventListener("mousemove", this.handleMousemove);
     document.removeEventListener("mouseup", this.handleMouseup);
     //console.log(clientX, clientY);
-    this.setPosition(clientX, clientY);
+    this.setPosition(clientX, clientY,element, position, shifts);
 
     //TODO: Custom event dnd:end
   }
 
-  calcShifts(x, y, element) {
+  calcShifts(x, y, element, shifts) {
     const { left, top } = element.getBoundingClientRect();
-    //console.log( left, top )
-    position = {
-      top: left,
-      left: top
-    }
-  
-    shifts = {
-      x: 0,
-      y: 0
-    }
-    
+
     shifts.x = x - left;
     shifts.y = y - top;
   }
 
-  setPosition(left, top) {
-    this.position.left = left - this.shifts.x;
-    this.position.top = top - this.shifts.y;
+  setPosition(left, top, element, position, shifts) {
+    position.left = left - shifts.x;
+    position.top = top - shifts.y;
 
-    this.element.style.left = this.position.left + "px";
-    this.element.style.top = this.position.top + "px";
+    element.style.left = position.left + "px";
+    element.style.top = position.top + "px";
   }
 }
 
