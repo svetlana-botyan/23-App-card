@@ -42,10 +42,12 @@ body {
   }
   #newCard {
     cursor: pointer;
-
-    img {
-      width: 100px;
-    }
+    width: 100px;
+    height: 100px;
+    background-image: url(../images/new-task.png);
+    background-position: center;
+    background-repeat: repeat;
+    background-size: cover;
   }
 }
 
