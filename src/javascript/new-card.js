@@ -1,5 +1,4 @@
 import { nanoid } from "nanoid";
-import { Dnd } from './dnd'
 // import { Modal } from 'bootstrap'
 
 class Card {
@@ -97,10 +96,6 @@ class Card {
     const cards = await this.getCards();
 
     const cardsHTML = this.createCards(cards);
-
-    const cardElements = document.getElementsByClassName("card");
-    //console.log(cardElements);
-    const dnd = new Dnd(cardElements, this.containerElement)
   }
 
   getTemplateCard({ id, content }) {
@@ -129,8 +124,8 @@ class Card {
       cardElement.classList.add("card");
       cardElement.id = `${card.id}`;
       cardElement.style.backgroundColor = `${card.color}`;
-      cardElement.style.top = `${card.position.top}px`;
-      cardElement.style.left = `${card.position.left}px`;
+      cardElement.style.top = `${card.position.top}`;
+      cardElement.style.left = `${card.position.left}`;
 
       cardElement.innerHTML = this.getTemplateCard(card);
 
