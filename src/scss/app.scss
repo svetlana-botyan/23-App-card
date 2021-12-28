@@ -1,0 +1,78 @@
+@import "~bootstrap/scss/bootstrap";
+
+body {
+  background-image: url(../images/baclground.jpg);
+  background-position: center;
+  background-size: cover;
+}
+
+.create-card {
+  position: absolute;
+  bottom: 1%;
+  right: 1%;
+
+  .colors {
+    display: none;
+  }
+
+  .colors button {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  .yellow {
+    background-color: #f8eb5c;
+  }
+  .green {
+    background-color: #b6ef94;
+  }
+  .pink {
+    background-color: #ffb9f7;
+  }
+  .blue {
+    background-color: #99e5ff;
+  }
+  .gray {
+    background-color: #e3e3e3;
+  }
+  .orange {
+    background-color: #f65b00;
+  }
+  #newCard {
+    cursor: pointer;
+
+    img {
+      width: 100px;
+    }
+  }
+}
+
+.card {
+  position: absolute;
+  min-width: 160px;
+  min-height: 200px;
+  border-radius: 10px;
+  border: 6px solid transparent;
+  box-shadow: 0 0 6px rgba(55, 56, 56, 0.747);
+  cursor: pointer;
+
+  .menu {
+    border-bottom: 1px solid gray;
+
+    button {
+      background-color: transparent;
+      padding: 2px 4px;
+      border: none;
+      margin: 0;
+      &:hover {
+        background-color: rgba(128, 128, 128, 0.267);
+      }
+
+      svg{
+        color: gray;
+      }
+    }
+  }
+}
