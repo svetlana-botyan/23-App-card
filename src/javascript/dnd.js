@@ -9,12 +9,11 @@ class Dnd {
     left: "auto",
   };
 
-  element = ''
 
-  constructor(containerElement) {   
-    this.containerElement = containerElement;
+  constructor(element) {
+    this.element = element;
 
-    this.init();
+    this.init()
   }
 
   init() {
@@ -22,12 +21,11 @@ class Dnd {
     this.handleMousemove = this.handleMousemove.bind(this);
     this.handleMouseup = this.handleMouseup.bind(this);
 
-    this.containerElement.addEventListener("mousedown", this.handleMousedown);
+    this.element.addEventListener("mousedown", this.handleMousedown);
   }
 
-  handleMousedown(event) {
-     this.element = event.target
-    console.log(this.element);
+  handleMousedown({ clientX, clientY }) {
+    this.element.style.zIndex = 100
 
     document.addEventListener("mousemove", this.handleMousemove);
     document.addEventListener("mouseup", this.handleMouseup);
@@ -38,7 +36,7 @@ class Dnd {
   }
 
   handleMousemove(event) {
-    const { clientX, clientY } = event;     
+    const { clientX, clientY } = event;
 
     this.setPosition(clientX, clientY);
   }
@@ -46,11 +44,17 @@ class Dnd {
   handleMouseup({ clientX, clientY }) {
     document.removeEventListener("mousemove", this.handleMousemove);
     document.removeEventListener("mouseup", this.handleMouseup);
-    
-    //console.log(clientX, clientY);
-    this.setPosition(clientX, clientY);
+    this.element.style.zIndex = 'auto'
 
-    //TODO: Custom event dnd:end
+    this.setPosition(clientX, clientY)
+
+    const id = this.element.id
+    const newPosition = this.position
+
+    const event = new CustomEvent('card:position', {
+      detail: { id, newPosition }
+    })
+    window.dispatchEvent(event)
   }
 
   calcShifts(x, y) {
@@ -61,7 +65,7 @@ class Dnd {
   }
 
   setPosition(left, top) {
-    console.log(this.element);
+    //console.log(this.element);
     this.position.left = left - this.shifts.x;
     this.position.top = top - this.shifts.y;
 
