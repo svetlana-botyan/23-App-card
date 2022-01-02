@@ -1,6 +1,5 @@
 import { nanoid } from 'nanoid'
 import { Dnd } from './dnd'
-// import { Modal } from 'bootstrap'
 
 class Card {
   constructor (newCardElement, colorsElement, containerElement) {
@@ -14,16 +13,17 @@ class Card {
   init () {
     this.renderCards()
 
-    // this.instanceModal = Modal.getOrCreateInstance(this.modalElement)
     this.handleClickColorCard = this.handleClickColorCard.bind(this)
     this.handleClickButtonCreate = this.handleClickButtonCreate.bind(this)
+    this.handleClickDelete = this.handleClickDelete.bind(this)
     this.handleNewPosition = this.handleNewPosition.bind(this)
-    // this.handleFormSetEdit = this.handleFormSetEdit.bind(this)
+    this.handleCancelClick = this.handleCancelClick.bind(this)
+    this.handleEditClick = this.handleEditClick.bind(this)
 
     this.colorsElement.addEventListener('click', this.handleClickColorCard)
     this.newCardElement.addEventListener('click', this.handleClickButtonCreate)
+    this.containerElement.addEventListener('click', this.handleClickDelete)
     window.addEventListener('card:position', this.handleNewPosition)
-    // window.addEventListener('form:setEdit', this.handleFormSetEdit)
   }
 
   handleClickButtonCreate () {
@@ -31,7 +31,7 @@ class Card {
   }
 
   toggle (el) {
-    el.style.display = el.style.display === 'block' ? 'none' : 'block'
+    el.style.display = (el.style.display === 'block') ? 'none' : 'block'
   }
 
   async handleClickColorCard ({ target }) {
@@ -105,6 +105,9 @@ class Card {
 
     cardElement.innerHTML = this.getTemplateCard(card)
 
+    cardElement.addEventListener('dblclick', this.handleDblClick)
+    cardElement.addEventListener('click', this.handleCancelClick)
+    cardElement.addEventListener('click', this.handleEditClick)
     new Dnd(cardElement)
 
     return this.containerElement.append(cardElement)
@@ -122,20 +125,27 @@ class Card {
   getTemplateCard ({ id, content }) {
     return `
     <div class="menu d-flex justify-content-end">
-    <button type="button" class="btn btn-success my-0" data-toggle="tooltip" data-id = "${id}" data-role ="edit" data-placement="top" title="Edit">
-      <svg class="pe-none align-center" width="20" height="20" >
-        <use  href="#edit-pencil" />
-      </svg>
-    </button>
-    <button type="button" class="btn btn-danger" data-toggle="tooltip" data-placement="top" data-id = "${id}" data-role ="Delete" title="Delete">
-      <svg class="pe-none align-center" width="20" height="20" >
+     <button type="button" class="btn btn-outline-danger" data-toggle="tooltip" data-placement="top" data-id = "${id}" data-role ="delete" title="Delete">
+       <svg class="pe-none align-center" width="20" height="20" >
         <use href="#trash" />
-      </svg>
-    </button>
-  </div>
-  <div class="content">
-  ${content}
-  </div>
+       </svg>
+      </button>
+     </div>
+     <div class="stick_content">
+        ${content}
+      </div>
+      <form class="stick_form">
+      <textarea name="content">${content}</textarea>
+      <div class="d-flex justify-content-end">
+        <button data-role="cancel" class="btn btn-outline-success" type="button"><svg class="pe-none" width="20"
+            height="20">
+            <use href="#Xcircle" />
+          </svg></button>
+        <button data-role="saveEdit" class="btn  btn-outline-primary" type="button"><svg class="pe-none " width="20" height="20">
+            <use href="#check" />
+          </svg></button>
+      </div>
+    </form>
     `
   }
 
@@ -151,12 +161,65 @@ class Card {
   }
 
   async getCard (id) {
-    const url = `/api/posts/${id}` // от backend
+    const url = `/api/posts/${id}`
 
     const responce = await fetch(url)
     const card = await responce.json()
 
     return card
+  }
+
+  // delete card
+  async handleClickDelete ({ target }) {
+    if (target.dataset.role === 'delete') {
+      const { id } = target.dataset
+
+      const isRemove = confirm('Do you want to delete card?')
+
+      if (!isRemove) return
+
+      await this.removeCard(id)
+
+      const cardRemoveElement = this.containerElement.querySelector(`#${id}`)
+      cardRemoveElement.remove()
+    }
+  }
+
+  async removeCard (id) {
+    const url = `/api/posts/${id}`
+
+    await fetch(url, { method: 'DELETE' })
+  }
+
+  handleDblClick ({ currentTarget }) {
+    currentTarget.classList.add('stick_edit')
+  }
+
+  // cancel
+  handleCancelClick (event) {
+    const { target, currentTarget } = event
+
+    if (target.dataset.role === 'cancel') {
+      currentTarget.classList.remove('stick_edit')
+    }
+  }
+
+  // edit
+  async handleEditClick (event) {
+    const { target, currentTarget } = event
+    const { id } = currentTarget
+
+    if (target.dataset.role === 'saveEdit') {
+      const textareaElement = currentTarget.querySelector('textarea')
+
+      const data = await this.getCard(id)
+      data.content = textareaElement.value
+
+      await this.sendCard(data, 'PUT')
+
+      currentTarget.remove()
+      this.renderCard(data)
+    }
   }
 }
 

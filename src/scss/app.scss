@@ -54,7 +54,7 @@ body {
 
 .card {
   position: absolute;
-  min-width: 160px;
+  width: 160px;
   min-height: 200px;
   border-radius: 10px;
   border: 6px solid transparent;
@@ -63,19 +63,46 @@ body {
 
   .menu {
     border-bottom: 1px solid gray;
+  }
 
-    button {
-      background-color: transparent;
-      padding: 2px 4px;
-      border: none;
-      margin: 0;
-      &:hover {
-        background-color: rgba(128, 128, 128, 0.267);
-      }
+  button {
+    background-color: transparent;
+    padding: 2px 4px;
+    border: none;
+    margin: 0;
 
-      svg{
-        color: gray;
-      }
+    &:hover {
+      background-color: rgba(128, 128, 128, 0.267);
+    }
+
+    &:active,
+    &:focus {
+      box-shadow: none;
+    }
+
+    svg {
+      color: gray;
     }
   }
+}
+
+.stick_content {
+  display: block;
+  word-break: break-word;
+}
+.stick_edit .stick_content {
+  display: none;
+}
+
+.stick_form {
+  display: none;
+
+  textarea {
+    width: 100%;
+    background-color: rgba(255, 235, 205, 0.445);
+    min-height: 150px;
+  }
+}
+.stick_edit .stick_form {
+  display: block;
 }
